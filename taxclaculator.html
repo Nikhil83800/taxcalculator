@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income Tax Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .calculator-container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9f7ef;
+            border-radius: 4px;
+            display: none;
+        }
+        .deduction-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-radius: 4px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #ddd;
+            margin-right: 5px;
+            border-radius: 4px 4px 0 0;
+        }
+        .tab.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .tax-breakup {
+            margin-top: 20px;
+        }
+        .tax-breakup table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .tax-breakup th, .tax-breakup td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .tax-breakup th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h1>Income Tax Calculator</h1>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="openTab('basic')">Basic Details</div>
+            <div class="tab" onclick="openTab('deductions')">Deductions</div>
+            <div class="tab" onclick="openTab('investments')">Investments</div>
+        </div>
+        
+        <div id="basic" class="tab-content active">
+            <div class="form-group">
+                <label for="financial-year">Financial Year:</label>
+                <select id="financial-year">
+                    <option value="2023-24">2023-24 (Assessment Year 2024-25)</option>
+                    <option value="2024-25" selected>2024-25 (Assessment Year 2025-26)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="age-group">Age Group:</label>
+                <select id="age-group">
+                    <option value="below-60">Below 60 years</option>
+                    <option value="60-80">60 to 80 years (Senior Citizen)</option>
+                    <option value="above-80">Above 80 years (Super Senior Citizen)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="regime">Tax Regime:</label>
+                <select id="regime">
+                    <option value="new">New Tax Regime (Default)</option>
+                    <option value="old">Old Tax Regime</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="income">Annual Income (₹):</label>
+                <input type="number" id="income" placeholder="Enter your annual income">
+            </div>
+            
+            <div class="form-group">
+                <label for="hra-exempt">HRA Exemption (₹):</label>
+                <input type="number" id="hra-exempt" placeholder="Enter HRA exemption amount">
+            </div>
+        </div>
+        
+        <div id="deductions" class="tab-content">
+            <div class="form-group">
+                <label for="section-80c">Section 80C Deductions (₹):</label>
+                <input type="number" id="section-80c" placeholder="Max ₹1,50,000">
+            </div>
+            
+            <div class="form-group">
+                <label for="section-80d">Section 80D (Medical Insurance) (₹):</label>
+                <input type="number" id="section-80d" placeholder="Max ₹75,000">
+            </div>
+            
+            <div class="form-group">
+                <label for="section-80e">Section 80E (Education Loan Interest) (₹):</label>
+                <input type="number" id="section-80e" placeholder="Enter amount">
+            </div>
+            
+            <div class="form-group">
+                <label for="section-80g">Section 80G (Donations) (₹):</label>
+                <input type="number" id="section-80g" placeholder="Enter amount">
+            </div>
+            
+            <div class="form-group">
+                <label for="other-deductions">Other Deductions (₹):</label>
+                <input type="number" id="other-deductions" placeholder="Enter other deductions">
+            </div>
+        </div>
+        
+        <div id="investments" class="tab-content">
+            <div class="form-group">
+                <label for="ppf">Public Provident Fund (PPF) (₹):</label>
+                <input type="number" id="ppf" placeholder="Enter PPF investment">
+            </div>
+            
+            <div class="form-group">
+                <label for="elss">ELSS Mutual Funds (₹):</label>
+                <input type="number" id="elss" placeholder="Enter ELSS investment">
+            </div>
+            
+            <div class="form-group">
+                <label for="nps">National Pension System (NPS) (₹):</label>
+                <input type="number" id="nps" placeholder="Enter NPS investment">
+            </div>
+            
+            <div class="form-group">
+                <label for="fd">Tax Saving Fixed Deposit (₹):</label>
+                <input type="number" id="fd" placeholder="Enter FD investment">
+            </div>
+            
+            <div class="form-group">
+                <label for="home-loan">Home Loan Principal (₹):</label>
+                <input type="number" id="home-loan" placeholder="Enter home loan principal">
+            </div>
+        </div>
+        
+        <button onclick="calculateTax()">Calculate Tax</button>
+        
+        <div id="results" class="results">
+            <h2>Tax Calculation Summary</h2>
+            <div id="summary"></div>
+            <div id="tax-breakup" class="tax-breakup"></div>
+            <div id="suggestions"></div>
+        </div>
+    </div>
+
+    <script>
+        function openTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            // Remove active class from all tabs
+            const tabs = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            
+            // Show the selected tab content and mark tab as active
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+        
+        function calculateTax() {
+            // Get input values
+            const financialYear = document.getElementById('financial-year').value;
+            const ageGroup = document.getElementById('age-group').value;
+            const regime = document.getElementById('regime').value;
+            const income = parseFloat(document.getElementById('income').value) || 0;
+            const hraExempt = parseFloat(document.getElementById('hra-exempt').value) || 0;
+            
+            // Get deduction values
+            const section80c = parseFloat(document.getElementById('section-80c').value) || 0;
+            const section80d = parseFloat(document.getElementById('section-80d').value) || 0;
+            const section80e = parseFloat(document.getElementById('section-80e').value) || 0;
+            const section80g = parseFloat(document.getElementById('section-80g').value) || 0;
+            const otherDeductions = parseFloat(document.getElementById('other-deductions').value) || 0;
+            
+            // Get investment values
+            const ppf = parseFloat(document.getElementById('ppf').value) || 0;
+            const elss = parseFloat(document.getElementById('elss').value) || 0;
+            const nps = parseFloat(document.getElementById('nps').value) || 0;
+            const fd = parseFloat(document.getElementById('fd').value) || 0;
+            const homeLoan = parseFloat(document.getElementById('home-loan').value) || 0;
+            
+            // Calculate total deductions under old regime
+            const total80cDeductions = Math.min(section80c + ppf + elss + nps + fd + homeLoan, 150000);
+            const totalDeductions = total80cDeductions + section80d + section80e + section80g + otherDeductions;
+            
+            // Calculate taxable income based on regime
+            let taxableIncome, tax, cess, totalTax;
+            
+            if (regime === 'old') {
+                // Old regime calculation
+                taxableIncome = income - hraExempt - totalDeductions;
+                tax = calculateOldRegimeTax(taxableIncome, ageGroup);
+            } else {
+                // New regime calculation (FY 2023-24 onwards)
+                taxableIncome = income - hraExempt;
+                tax = calculateNewRegimeTax(taxableIncome);
+            }
+            
+            // Calculate health and education cess (4%)
+            cess = tax * 0.04;
+            totalTax = tax + cess;
+            
+            // Calculate effective tax rate
+            const effectiveTaxRate = (totalTax / income) * 100;
+            
+            // Display results
+            displayResults(income, taxableIncome, tax, cess, totalTax, effectiveTaxRate, regime);
+            
+            // Show suggestions
+            displaySuggestions(income, regime, totalDeductions);
+        }
+        
+        function calculateOldRegimeTax(income, ageGroup) {
+            let tax = 0;
+            
+            // Determine basic exemption limit based on age
+            let exemptionLimit;
+            if (ageGroup === 'below-60') {
+                exemptionLimit = 250000;
+            } else if (ageGroup === '60-80') {
+                exemptionLimit = 300000;
+            } else { // above-80
+                exemptionLimit = 500000;
+            }
+            
+            if (income <= exemptionLimit) {
+                return 0;
+            }
+            
+            // Calculate tax based on slabs
+            const taxableIncome = income - exemptionLimit;
+            
+            if (taxableIncome <= 250000) {
+                tax = 0;
+            } else if (taxableIncome <= 500000) {
+                tax = (taxableIncome - 250000) * 0.05;
+            } else if (taxableIncome <= 1000000) {
+                tax = 12500 + (taxableIncome - 500000) * 0.2;
+            } else {
+                tax = 112500 + (taxableIncome - 1000000) * 0.3;
+            }
+            
+            // Rebate under section 87A (if applicable)
+            if (taxableIncome <= 500000) {
+                tax = Math.max(tax - 12500, 0);
+            }
+            
+            return tax;
+        }
+        
+        function calculateNewRegimeTax(income) {
+            let tax = 0;
+            
+            // No deductions allowed in new regime (except standard deduction for salaried)
+            const standardDeduction = 50000; // For salaried individuals
+            const taxableIncome = income - standardDeduction;
+            
+            if (taxableIncome <= 300000) {
+                tax = 0;
+            } else if (taxableIncome <= 600000) {
+                tax = (taxableIncome - 300000) * 0.05;
+            } else if (taxableIncome <= 900000) {
+                tax = 15000 + (taxableIncome - 600000) * 0.1;
+            } else if (taxableIncome <= 1200000) {
+                tax = 45000 + (taxableIncome - 900000) * 0.15;
+            } else if (taxableIncome <= 1500000) {
+                tax = 90000 + (taxableIncome - 1200000) * 0.2;
+            } else {
+                tax = 150000 + (taxableIncome - 1500000) * 0.3;
+            }
+            
+            // Rebate under section 87A for new regime (if applicable)
+            if (taxableIncome <= 700000) {
+                tax = Math.max(tax - 25000, 0);
+            }
+            
+            return tax;
+        }
+        
+        function displayResults(income, taxableIncome, tax, cess, totalTax, effectiveTaxRate, regime) {
+            const resultsDiv = document.getElementById('results');
+            const summaryDiv = document.getElementById('summary');
+            const taxBreakupDiv = document.getElementById('tax-breakup');
+            
+            // Show results section
+            resultsDiv.style.display = 'block';
+            
+            // Create summary
+            summaryDiv.innerHTML = `
+                <div class="summary-item">
+                    <span>Annual Income:</span>
+                    <span>₹${income.toLocaleString('en-IN')}</span>
+                </div>
+                <div class="summary-item">
+                    <span>Taxable Income:</span>
+                    <span>₹${taxableIncome.toLocaleString('en-IN')}</span>
+                </div>
+                <div class="summary-item">
+                    <span>Income Tax (${regime === 'old' ? 'Old' : 'New'} Regime):</span>
+                    <span>₹${tax.toLocaleString('en-IN')}</span>
+                </div>
+                <div class="summary-item">
+                    <span>Health & Education Cess (4%):</span>
+                    <span>₹${cess.toLocaleString('en-IN')}</span>
+                </div>
+                <div class="summary-item" style="font-weight: bold; border-top: 1px solid #ccc; padding-top: 10px;">
+                    <span>Total Tax Liability:</span>
+                    <span>₹${totalTax.toLocaleString('en-IN')}</span>
+                </div>
+                <div class="summary-item">
+                    <span>Effective Tax Rate:</span>
+                    <span>${effectiveTaxRate.toFixed(2)}%</span>
+                </div>
+            `;
+            
+            // Create tax breakup table
+            taxBreakupDiv.innerHTML = `
+                <h3>Tax Breakup</h3>
+                <table>
+                    <tr>
+                        <th>Component</th>
+                        <th>Amount (₹)</th>
+                    </tr>
+                    <tr>
+                        <td>Annual Income</td>
+                        <td>${income.toLocaleString('en-IN')}</td>
+                    </tr>
+                    <tr>
+                        <td>${regime === 'old' ? 'Deductions' : 'Standard Deduction'}</td>
+                        <td>${(income - taxableIncome).toLocaleString('en-IN')}</td>
+                    </tr>
+                    <tr>
+                        <td>Taxable Income</td>
+                        <td>${taxableIncome.toLocaleString('en-IN')}</td>
+                    </tr>
+                    <tr>
+                        <td>Income Tax</td>
+                        <td>${tax.toLocaleString('en-IN')}</td>
+                    </tr>
+                    <tr>
+                        <td>Cess (4%)</td>
+                        <td>${cess.toLocaleString('en-IN')}</td>
+                    </tr>
+                    <tr style="font-weight: bold;">
+                        <td>Total Tax Payable</td>
+                        <td>${totalTax.toLocaleString('en-IN')}</td>
+                    </tr>
+                </table>
+            `;
+        }
+        
+        function displaySuggestions(income, regime, totalDeductions) {
+            const suggestionsDiv = document.getElementById('suggestions');
+            let suggestions = [];
+            
+            if (regime === 'old') {
+                if (totalDeductions < 150000 && income > 500000) {
+                    suggestions.push("You can invest more in tax-saving instruments under Section 80C to maximize deductions (up to ₹1,50,000).");
+                }
+                
+                if (income > 1000000) {
+                    suggestions.push("Consider tax-efficient investments like ELSS or NPS which offer additional deductions beyond 80C.");
+                }
+            } else {
+                if (income < 750000) {
+                    suggestions.push("With income below ₹7.5 lakhs, you may be eligible for full tax rebate under the new regime.");
+                }
+                
+                if (income > 1500000 && totalDeductions > 200000) {
+                    suggestions.push("Your deductions are substantial. Compare with old regime as it might be more beneficial.");
+                }
+            }
+            
+            if (suggestions.length > 0) {
+                suggestionsDiv.innerHTML = `
+                    <h3>Tax Saving Suggestions</h3>
+                    <ul>
+                        ${suggestions.map(s => `<li>${s}</li>`).join('')}
+                    </ul>
+                `;
+            } else {
+                suggestionsDiv.innerHTML = '';
+            }
+        }
+    </script>
+</body>
+</html>
